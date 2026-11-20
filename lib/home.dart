@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:sqlflite_student_managment/model/student_model.dart';
 import 'package:sqlflite_student_managment/database/database_helper.dart';
 
-
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -11,47 +10,77 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Map<String,dynamic>> students =[];
 
   final nameController = TextEditingController();
   final ageController = TextEditingController();
 
- Future<void> addStudent() async {
+  List<Map<String, dynamic>> students = [];
 
-  final student = StudentModel(
-    name: nameController.text,
-    age: int.parse(ageController.text),
-  );
+  @override
+  void initState() {
+    super.initState();
+    fetchStudents();
+  }
 
-  await DatabaseHelper.instance.insertStudent(
-    student.toMap(),
-  );
-  
+  // Add Student
+  Future<void> addStudent() async {
 
+    if (nameController.text.isEmpty || ageController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
 
+    final age = int.tryParse(ageController.text);
 
-  nameController.clear();
-  ageController.clear();
-  fetchStudents();
+    if (age == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Enter a valid age')),
+      );
+      return;
+    }
 
-}
-Future<void> fetchStudents() async {
+    final student = StudentModel(
+      name: nameController.text.trim(),
+      age: age,
+    );
 
-  final data = await DatabaseHelper.instance.getStudents();
+    await DatabaseHelper.instance.insertStudent(
+      student.toMap(),
+    );
 
-  setState(() {
-    students = data;
-  });
-}
-@override
-void initState(){
-  super.initState();
-  fetchStudents();
-}
+    nameController.clear();
+    ageController.clear();
+
+    await fetchStudents();
+
+  }
+
+  // Fetch Students
+  Future<void> fetchStudents() async {
+
+    final data = await DatabaseHelper.instance.getStudents();
+
+    if (!mounted) return;
+
+    setState(() {
+      students = data;
+    });
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    ageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+      backgroundColor: Colors.amber,
       appBar: AppBar(
         title: Text('Student Management'),
         centerTitle: true,
@@ -65,45 +94,37 @@ void initState(){
         child: Column(
           children: [
 
-            // Student Name
             TextField(
               controller: nameController,
               decoration: InputDecoration(
                 labelText: 'Student Name',
-                hintText: 'Enter student name',
                 border: OutlineInputBorder(),
               ),
             ),
 
             SizedBox(height: 15),
 
-            // Student Age
             TextField(
               controller: ageController,
- 
+              keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 labelText: 'Student Age',
-                hintText: 'Enter student age',
                 border: OutlineInputBorder(),
               ),
             ),
 
             SizedBox(height: 15),
 
-            // Add Button (UI only)
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: ()async {
-                  await addStudent();
-                },
+                onPressed: addStudent,
                 child: Text('Add Student'),
               ),
             ),
 
             SizedBox(height: 20),
 
-            // Student List Heading
             Text(
               'Student List',
               style: TextStyle(
@@ -114,25 +135,33 @@ void initState(){
 
             SizedBox(height: 10),
 
-            // Student List UI
             Expanded(
-              child: ListView.builder(
-                itemCount: students.length,
+              child: students.isEmpty
+                  ? Center(
+                      child: Text('No students added yet'),
+                    )
+                  : ListView.builder(
+                      itemCount: students.length,
 
-                itemBuilder: (context, index) {
-                  final student =students[index];
+                      itemBuilder: (context, index) {
 
-                  return Card(
-                    margin: EdgeInsets.only(bottom: 10),
+                        final student = students[index];
 
-                    child: ListTile(
-                     leading: Icon(Icons.person),
-                     title:Text(student['name']) ,
-                     subtitle: Text("Age : ${student['age']}"),
+                        return Card(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              child: Text('${student['id']}'),
+                            ),
+
+                            title: Text(student['name']),
+
+                            subtitle: Text(
+                              'Age: ${student['age']}',
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
 
           ],
