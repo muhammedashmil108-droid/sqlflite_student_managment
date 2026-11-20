@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sqlflite_student_managment/model/student_model.dart';
+import 'package:sqlflite_student_managment/database/database_helper.dart';
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -8,16 +11,43 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  List<Map<String,dynamic>> students =[];
 
   final nameController = TextEditingController();
   final ageController = TextEditingController();
 
-  @override
-  void dispose() {
-    nameController.dispose();
-    ageController.dispose();
-    super.dispose();
-  }
+ Future<void> addStudent() async {
+
+  final student = StudentModel(
+    name: nameController.text,
+    age: int.parse(ageController.text),
+  );
+
+  await DatabaseHelper.instance.insertStudent(
+    student.toMap(),
+  );
+  
+
+
+
+  nameController.clear();
+  ageController.clear();
+  fetchStudents();
+
+}
+Future<void> fetchStudents() async {
+
+  final data = await DatabaseHelper.instance.getStudents();
+
+  setState(() {
+    students = data;
+  });
+}
+@override
+void initState(){
+  super.initState();
+  fetchStudents();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +80,7 @@ class _HomeState extends State<Home> {
             // Student Age
             TextField(
               controller: ageController,
-              keyboardType: TextInputType.number,
+ 
               decoration: InputDecoration(
                 labelText: 'Student Age',
                 hintText: 'Enter student age',
@@ -64,7 +94,9 @@ class _HomeState extends State<Home> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: ()async {
+                  await addStudent();
+                },
                 child: Text('Add Student'),
               ),
             ),
@@ -85,21 +117,18 @@ class _HomeState extends State<Home> {
             // Student List UI
             Expanded(
               child: ListView.builder(
-                itemCount: 5,
+                itemCount: students.length,
 
                 itemBuilder: (context, index) {
+                  final student =students[index];
 
                   return Card(
                     margin: EdgeInsets.only(bottom: 10),
 
                     child: ListTile(
-                      leading: CircleAvatar(
-                        child: Text('${index + 1}'),
-                      ),
-
-                      title: Text('Student Name'),
-
-                      subtitle: Text('Age: 22'),
+                     leading: Icon(Icons.person),
+                     title:Text(student['name']) ,
+                     subtitle: Text("Age : ${student['age']}"),
                     ),
                   );
                 },
