@@ -75,4 +75,18 @@ return await db.delete(
   whereArgs: [id],
 );
   }
+
+  // update or edit Student
+
+  Future<int>  updateStudent(int id, Map<String,dynamic> student)async{
+    Database db =await database;
+
+    return await db.update(
+      'students',
+      student,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+  }
 }
