@@ -63,4 +63,16 @@ class DatabaseHelper {
 
     return await db.query('students');
   }
+
+  // Delete students
+  Future<int> deleteStudent(int id)async{
+
+Database db = await database;
+
+return await db.delete(
+  'students',
+  where: 'id = ?',
+  whereArgs: [id],
+);
+  }
 }

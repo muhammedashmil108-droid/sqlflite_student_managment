@@ -68,6 +68,12 @@ class _HomeState extends State<Home> {
       students = data;
     });
   }
+// Delete student
+Future<void> deleteStudent(int id)async{
+
+await DatabaseHelper.instance.deleteStudent(id);
+await fetchStudents();
+}
 
   @override
   void dispose() {
@@ -80,7 +86,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: Colors.amber,
+     
       appBar: AppBar(
         title: Text('Student Management'),
         centerTitle: true,
@@ -150,7 +156,7 @@ class _HomeState extends State<Home> {
                         return Card(
                           child: ListTile(
                             leading: CircleAvatar(
-                              child: Text('${student['id']}'),
+                              child: Text('${index + 1}'),
                             ),
 
                             title: Text(student['name']),
@@ -158,6 +164,11 @@ class _HomeState extends State<Home> {
                             subtitle: Text(
                               'Age: ${student['age']}',
                             ),
+                            trailing: IconButton(onPressed: ()async{
+                              await deleteStudent(student['id']);
+
+                            },
+                             icon: Icon(Icons.delete,color: Colors.red,)),
                           ),
                         );
                       },
