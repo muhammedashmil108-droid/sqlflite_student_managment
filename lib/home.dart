@@ -15,6 +15,7 @@ class _HomeState extends State<Home> {
   final ageController = TextEditingController();
 
   List<Map<String, dynamic>> students = [];
+  int? editId;
 
   @override
   void initState() {
@@ -46,12 +47,21 @@ class _HomeState extends State<Home> {
       age: age,
     );
 
-    await DatabaseHelper.instance.insertStudent(
-      student.toMap(),
-    );
+    if(editId == null){
+      
+      // Add student
+      await DatabaseHelper.instance.insertStudent(student.toMap());
+    }else{
+
+      // Update student
+      await DatabaseHelper.instance.updateStudent(editId!, student.toMap());
+    }
 
     nameController.clear();
     ageController.clear();
+    setState(() {
+      editId = null;
+    });
 
     await fetchStudents();
 
@@ -75,12 +85,21 @@ await DatabaseHelper.instance.deleteStudent(id);
 await fetchStudents();
 }
 
+ // edit or update student
+  void editStudent(Map<String,dynamic>student){
+    setState(() {
+      editId = student['id'];
+      nameController.text = student['name'];
+      ageController.text = student['age'].toString();
+    });
+  }
   @override
   void dispose() {
     nameController.dispose();
     ageController.dispose();
     super.dispose();
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -164,11 +183,23 @@ await fetchStudents();
                             subtitle: Text(
                               'Age: ${student['age']}',
                             ),
-                            trailing: IconButton(onPressed: ()async{
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                            // edit button
+                            IconButton(onPressed: (){
+                              editStudent(student);
+                            }, icon: Icon(Icons.edit,color: Colors.blue,)),
+
+                            // delete button
+                             IconButton(onPressed: ()async{
                               await deleteStudent(student['id']);
 
                             },
                              icon: Icon(Icons.delete,color: Colors.red,)),
+                              ],
+                            ),
+                           
                           ),
                         );
                       },
