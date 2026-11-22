@@ -26,12 +26,12 @@ class Home extends StatefulWidget {
   // Add Student
   Future<void> addStudent() async {
 
-    if (nameController.text.isEmpty || ageController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all fields')),
-      );
-      return;
-    }
+    // if (nameController.text.isEmpty || ageController.text.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Please fill all fields')),
+    //   );
+    //   return;
+    // }
 
     final age = int.tryParse(ageController.text);
 
@@ -140,15 +140,15 @@ class Home extends StatefulWidget {
               ),
             ),
 
-            SizedBox(height: 15),
+             SizedBox(height: 15),
 
-            SizedBox(
+             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: addStudent,
                 child: Text('Add Student'),
               ),
-            ),
+             ),
 
             SizedBox(height: 20),
 
