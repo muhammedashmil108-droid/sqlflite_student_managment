@@ -9,7 +9,7 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+ class _HomeState extends State<Home> {
 
   final nameController = TextEditingController();
   final ageController = TextEditingController();
@@ -17,10 +17,10 @@ class _HomeState extends State<Home> {
   List<Map<String, dynamic>> students = [];
   int? editId;
 
-  @override
-  void initState() {
+   @override
+   void initState() {
     super.initState();
-    fetchStudents();
+   fetchStudents();
   }
 
   // Add Student
@@ -78,12 +78,14 @@ class _HomeState extends State<Home> {
       students = data;
     });
   }
-// Delete student
-Future<void> deleteStudent(int id)async{
 
-await DatabaseHelper.instance.deleteStudent(id);
-await fetchStudents();
-}
+   
+  // Delete student
+  Future<void> deleteStudent(int id)async{
+
+ await DatabaseHelper.instance.deleteStudent(id);
+ await fetchStudents();
+ }
 
  // edit or update student
   void editStudent(Map<String,dynamic>student){
@@ -100,7 +102,7 @@ await fetchStudents();
     super.dispose();
   }
   
-
+   
   @override
   Widget build(BuildContext context) {
 
