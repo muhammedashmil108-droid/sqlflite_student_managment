@@ -183,7 +183,7 @@ class Home extends StatefulWidget {
                             title: Text(student['name...']),
 
                             subtitle: Text(
-                              'Age: ${student['age']}',
+                              'Age: ${student['age...']}',
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
