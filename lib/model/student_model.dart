@@ -13,7 +13,6 @@ class StudentModel {
 
   Map<String,dynamic> toMap(){
     return{
-     
       'name': name,
       'age': age,
     };

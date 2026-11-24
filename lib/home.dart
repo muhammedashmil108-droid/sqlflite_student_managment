@@ -26,12 +26,12 @@ class Home extends StatefulWidget {
   // Add Student
   Future<void> addStudent() async {
 
-    // if (nameController.text.isEmpty || ageController.text.isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('Please fill all fields')),
-    //   );
-    //   return;
-    // }
+    if (nameController.text.isEmpty || ageController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
 
     final age = int.tryParse(ageController.text);
 
@@ -180,7 +180,7 @@ class Home extends StatefulWidget {
                               child: Text('${index + 1}'),
                             ),
 
-                            title: Text(student['name']),
+                            title: Text(student['name...']),
 
                             subtitle: Text(
                               'Age: ${student['age']}',
